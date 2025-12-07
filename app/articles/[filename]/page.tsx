@@ -78,6 +78,21 @@ export default function ArticlesPage() {
     data?.metadata?.markdown_report &&
     data.metadata.markdown_report.trim().length > 0;
 
+  const hasValidPdfReport =
+    data?.metadata?.pdf_report &&
+    data.metadata.pdf_report.trim().length > 0;
+
+  const handleViewReport = () => {
+    if (hasValidPdfReport && data?.metadata?.pdf_report) {
+      // Open PDF report in new tab
+      const pdfPath = `/data/${data.metadata.pdf_report}`;
+      window.open(pdfPath, "_blank");
+    } else if (hasValidMarkdownReport) {
+      // Fallback to markdown report sheet
+      setReportSheetOpen(true);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -146,8 +161,8 @@ export default function ArticlesPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setReportSheetOpen(true)}
-                disabled={!hasValidMarkdownReport}
+                onClick={handleViewReport}
+                disabled={!hasValidPdfReport && !hasValidMarkdownReport}
                 className="gap-2"
               >
                 <FileText className="h-4 w-4" />
