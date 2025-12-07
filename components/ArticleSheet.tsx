@@ -198,7 +198,7 @@ export function ArticleSheet({
                   ),
                 }}
               >
-                {article.article?.markdown_content || article.markdown_content || ""}
+                {article.article?.markdown_content ?? ""}
               </ReactMarkdown>
             )}
           </div>
