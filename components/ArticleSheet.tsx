@@ -99,7 +99,7 @@ export function ArticleSheet({
                     Summary
                   </h4>
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    {article.article.summary}
+                    {article.article?.summary}
                   </p>
                 </div>
 
@@ -107,35 +107,35 @@ export function ArticleSheet({
                   <div className="flex justify-between border-b border-border pb-2">
                     <span className="font-medium text-foreground">Source:</span>
                     <span className="text-muted-foreground">
-                      {article.article.source}
+                      {article.article?.source}
                     </span>
                   </div>
-                  {article.article.published_date && (
+                  {article.article?.published_date && (
                     <div className="flex justify-between border-b border-border pb-2">
                       <span className="font-medium text-foreground">
                         Published:
                       </span>
                       <span className="text-muted-foreground">
                         {format(
-                          new Date(article.article.published_date),
+                          new Date(article.article?.published_date),
                           "PPP"
                         )}
                       </span>
                     </div>
                   )}
-                  {article.article.updated_date && (
+                  {article.article?.updated_date && (
                     <div className="flex justify-between border-b border-border pb-2">
                       <span className="font-medium text-foreground">
                         Updated:
                       </span>
                       <span className="text-muted-foreground">
-                        {format(new Date(article.article.updated_date), "PPP")}
+                        {format(new Date(article.article?.updated_date), "PPP")}
                       </span>
                     </div>
                   )}
                 </div>
 
-                {article.article.authors &&
+                {article.article?.authors &&
                   article.article.authors.length > 0 && (
                     <div>
                       <h5 className="mb-2 text-sm font-semibold text-foreground">
@@ -147,7 +147,7 @@ export function ArticleSheet({
                     </div>
                   )}
 
-                {article.article.categories &&
+                {article.article?.categories &&
                   article.article.categories.length > 0 && (
                     <div>
                       <h5 className="mb-2 text-sm font-semibold text-foreground">
@@ -167,14 +167,18 @@ export function ArticleSheet({
                     </div>
                   )}
 
-                {article.article.tags && article.article.tags.length > 0 && (
+                {article.article?.tags && article.article.tags.length > 0 && (
                   <div>
                     <h5 className="mb-2 text-sm font-semibold text-foreground">
                       Tags
                     </h5>
                     <div className="flex flex-wrap gap-2">
-                      {article.article.tags.map((tag, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
+                      {article.article?.tags.map((tag, idx) => (
+                        <Badge
+                          key={idx}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -182,8 +186,8 @@ export function ArticleSheet({
                   </div>
                 )}
 
-                {article.article.key_points &&
-                  article.article.key_points.length > 0 && (
+                {article.article?.key_points &&
+                  article.article?.key_points.length > 0 && (
                     <div>
                       <h5 className="mb-3 text-sm font-semibold text-foreground">
                         Key Points

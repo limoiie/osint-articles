@@ -17,10 +17,11 @@ import { useState } from "react";
 
 interface ArticleCardProps {
   article: Article;
+  query: string;
   onCardClick: () => void;
 }
 
-export function ArticleCard({ article, onCardClick }: ArticleCardProps) {
+export function ArticleCard({ article, query, onCardClick }: ArticleCardProps) {
   const [imageError, setImageError] = useState(false);
 
   const handleExternalLinkClick = (e: React.MouseEvent) => {
@@ -37,6 +38,54 @@ export function ArticleCard({ article, onCardClick }: ArticleCardProps) {
       e.preventDefault();
       onCardClick();
     }
+  };
+
+  const highlightText = (text: string, query: string) => {
+    if (!query.trim()) return text;
+
+    // Split query into words and filter out empty strings
+    const queryWords = query
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+
+    if (queryWords.length === 0) return text;
+
+    // Create a regex pattern that matches any of the query words (case-insensitive)
+    const pattern = new RegExp(
+      `\\b(${queryWords.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\b`,
+      "gi"
+    );
+
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = pattern.exec(text)) !== null) {
+      // Add text before the match
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+
+      // Add highlighted match
+      parts.push(
+        <mark
+          key={match.index}
+          className="bg-yellow-200 dark:bg-yellow-900/50 font-medium"
+        >
+          {match[0]}
+        </mark>
+      );
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
   };
 
   const relevancePercentage = (article.relevance_score / 10) * 100;
@@ -229,7 +278,7 @@ export function ArticleCard({ article, onCardClick }: ArticleCardProps) {
             </div>
           </div>
           <CardDescription className="line-clamp-2 text-sm">
-            {article.original_snippet}
+            {highlightText(article.original_snippet, query)}
           </CardDescription>
           {!hasArticleData && (
             <div className="rounded-md bg-destructive/10 px-3 py-2">

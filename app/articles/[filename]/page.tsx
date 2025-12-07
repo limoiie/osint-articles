@@ -176,6 +176,7 @@ export default function ArticlesPage() {
                 <ArticleCard
                   key={`${article.url}-${idx}`}
                   article={article}
+                  query={data.metadata.query}
                   onCardClick={() => handleArticleClick(article)}
                 />
               ))}
