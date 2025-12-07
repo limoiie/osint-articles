@@ -1,0 +1,236 @@
+---
+alwaysApply: true
+---
+
+# shadcn-ui, Tailwind CSS v4, and TypeScript Best Practices
+
+## Project Structure
+
+- This is a Next.js 16 project using the App Router with React Server Components (RSC) enabled
+- Components are located in `@/components` (aliased from `components/`)
+- UI components from shadcn-ui are in `@/components/ui`
+- Utilities are in `@/lib/utils`
+- Use path aliases (`@/`) instead of relative imports when possible
+
+## shadcn-ui Guidelines
+
+### Component Installation
+
+- Always use `npx shadcn@latest add [component]` to add new shadcn-ui components
+- Components are configured with "new-york" style variant
+- Components use RSC (React Server Components) by default
+- Components are TypeScript-first with proper type definitions
+
+### Component Usage
+
+- Import shadcn-ui components from `@/components/ui/[component-name]`
+- Use the `cn()` utility from `@/lib/utils` for conditional class merging
+- Always use semantic HTML elements and proper accessibility attributes
+- Prefer composition over configuration when extending components
+
+### Example Component Pattern:
+
+```typescript
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+export function MyComponent({ className }: { className?: string }) {
+  return <Button className={cn("custom-classes", className)}>Click me</Button>;
+}
+```
+
+## Tailwind CSS v4 Guidelines
+
+### Configuration
+
+- This project uses Tailwind CSS v4 with the new `@import "tailwindcss"` syntax
+- Theme customization is done via CSS variables in `app/globals.css` using `@theme inline`
+- Dark mode is configured using the `.dark` class variant
+
+### Styling Best Practices
+
+- **Always use the `cn()` utility** for combining Tailwind classes, especially when conditionally applying classes
+- Use semantic color tokens (e.g., `bg-background`, `text-foreground`, `border-border`) instead of hardcoded colors
+- Leverage CSS variables for theming: `bg-primary`, `text-primary-foreground`, `border-border`, etc.
+- Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`
+- Prefer utility classes over custom CSS when possible
+- Use `dark:` prefix for dark mode styles
+
+### Color System
+
+- Use semantic color tokens from the theme:
+  - `background` / `foreground` - Main background and text
+  - `primary` / `primary-foreground` - Primary actions
+  - `secondary` / `secondary-foreground` - Secondary elements
+  - `muted` / `muted-foreground` - Muted/subtle elements
+  - `accent` / `accent-foreground` - Accent highlights
+  - `destructive` / `destructive-foreground` - Error/danger states
+  - `border` - Borders
+  - `input` - Input backgrounds
+  - `ring` - Focus rings
+
+### Spacing and Layout
+
+- Use Tailwind's spacing scale: `p-4`, `m-2`, `gap-6`, etc.
+- Use flexbox utilities: `flex`, `items-center`, `justify-between`
+- Use grid utilities: `grid`, `grid-cols-3`, `gap-4`
+- Prefer `gap-*` over manual margin spacing in flex/grid containers
+
+### Typography
+
+- Use font variables: `font-sans` (Geist Sans) and `font-mono` (Geist Mono)
+- Use semantic text sizes: `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`
+- Use font weights: `font-normal`, `font-medium`, `font-semibold`, `font-bold`
+- Use line height utilities: `leading-tight`, `leading-normal`, `leading-relaxed`
+
+## TypeScript Guidelines
+
+### Type Safety
+
+- Always use TypeScript strict mode (enabled in `tsconfig.json`)
+- Define proper types for all component props using interfaces or type aliases
+- Use `React.ReactNode` for children props
+- Prefer `interface` for object types, `type` for unions/intersections
+- Use `Readonly<>` for props that shouldn't be mutated
+
+### Component Props Pattern
+
+```typescript
+interface ComponentProps {
+  title: string;
+  description?: string;
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export function Component({
+  title,
+  description,
+  children,
+  className,
+}: ComponentProps) {
+  // component implementation
+}
+```
+
+### Next.js App Router Types
+
+- Use `Metadata` type from `next` for page metadata
+- Use `Readonly<{ children: React.ReactNode }>` for layout props
+- Use proper types for route params and search params
+
+## Next.js App Router Guidelines
+
+### Server Components (Default)
+
+- Components are Server Components by default (RSC enabled)
+- Use Server Components for data fetching, static content, and server-side logic
+- No `"use client"` directive needed unless using client-side features
+
+### Client Components
+
+- Add `"use client"` directive at the top of files that need:
+  - React hooks (`useState`, `useEffect`, etc.)
+  - Event handlers (`onClick`, `onChange`, etc.)
+  - Browser APIs (`window`, `localStorage`, etc.)
+  - Context providers/consumers
+
+### File Conventions
+
+- Use `page.tsx` for route pages
+- Use `layout.tsx` for shared layouts
+- Use `loading.tsx` for loading states
+- Use `error.tsx` for error boundaries
+- Use `not-found.tsx` for 404 pages
+
+### Image Optimization
+
+- Always use `next/image` for images
+- Provide `width` and `height` or use `fill` with a positioned container
+- Use `priority` for above-the-fold images
+- Use `alt` text for accessibility
+
+## Code Organization
+
+### Component Structure
+
+1. Imports (external libraries first, then internal)
+2. Type/interface definitions
+3. Component implementation
+4. Export statement
+
+### File Naming
+
+- Use PascalCase for component files: `MyComponent.tsx`
+- Use kebab-case for utility files: `format-date.ts`
+- Use descriptive, specific names
+
+## Accessibility
+
+- Always include `alt` text for images
+- Use semantic HTML elements (`<button>`, `<nav>`, `<main>`, etc.)
+- Include ARIA labels when needed
+- Ensure keyboard navigation works
+- Maintain proper heading hierarchy (`h1` → `h2` → `h3`)
+- Use proper form labels and associations
+
+## Performance
+
+- Use Server Components by default to reduce client bundle size
+- Lazy load client components when possible using `dynamic` from `next/dynamic`
+- Optimize images with `next/image`
+- Use `React.memo()` for expensive client components when appropriate
+- Avoid unnecessary re-renders by properly managing state
+
+## Common Patterns
+
+### Conditional Classes
+
+```typescript
+import { cn } from "@/lib/utils";
+
+<div
+  className={cn(
+    "base-classes",
+    condition && "conditional-classes",
+    className // allow prop override
+  )}
+/>;
+```
+
+### Responsive Design
+
+```typescript
+<div className="flex flex-col gap-4 md:flex-row md:gap-6 lg:gap-8">
+  {/* content */}
+</div>
+```
+
+### Dark Mode
+
+```typescript
+<div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  {/* content */}
+</div>
+```
+
+### Using Theme Colors
+
+```typescript
+<button className="bg-primary text-primary-foreground hover:bg-primary/90">
+  Button
+</button>
+```
+
+## Best Practices Summary
+
+1. ✅ Always use `cn()` for class merging
+2. ✅ Use semantic color tokens from the theme
+3. ✅ Prefer Server Components unless client features are needed
+4. ✅ Use proper TypeScript types for all props
+5. ✅ Follow Next.js App Router conventions
+6. ✅ Use path aliases (`@/`) for imports
+7. ✅ Keep components focused and composable
+8. ✅ Ensure accessibility in all components
+9. ✅ Optimize for performance (Server Components, image optimization)
+10. ✅ Use Tailwind utility classes over custom CSS
