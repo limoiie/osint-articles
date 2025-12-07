@@ -5,7 +5,14 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArticleCard } from "@/components/ArticleCard";
 import { ArticleSheet } from "@/components/ArticleSheet";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChevronLeft, FileText } from "lucide-react";
@@ -25,11 +32,30 @@ export default function ArticlesPage() {
     async function loadData() {
       try {
         setLoading(true);
-        const response = await fetch(`/api/data/${encodeURIComponent(filename)}`);
+        const response = await fetch(
+          `/api/data/${encodeURIComponent(filename)}`
+        );
         if (!response.ok) {
           throw new Error("Failed to load data file");
         }
         const result = await response.json();
+        result.articles = result.articles
+          .filter(
+            (article: Article) =>
+              article.crawl_success &&
+              article.extraction_success &&
+              article.article
+          )
+          .sort(
+            (a: Article, b: Article) => b.relevance_score - a.relevance_score
+          );
+        result.metadata.total_articles = result.articles.length;
+        result.metadata.successful = result.articles.filter(
+          (article: Article) =>
+            article.crawl_success &&
+            article.extraction_success &&
+            article.article
+        ).length;
         setData(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -82,8 +108,12 @@ export default function ArticlesPage() {
         <main className="container mx-auto px-4 py-16">
           <div className="flex flex-col items-center justify-center text-center">
             <FileText className="h-16 w-16 text-muted-foreground" />
-            <h2 className="mt-4 text-xl font-semibold text-foreground">Error loading data</h2>
-            <p className="mt-2 text-muted-foreground">{error || "Data file not found"}</p>
+            <h2 className="mt-4 text-xl font-semibold text-foreground">
+              Error loading data
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              {error || "Data file not found"}
+            </p>
           </div>
         </main>
       </div>
@@ -114,10 +144,12 @@ export default function ArticlesPage() {
               <span className="font-medium">Query:</span> {data.metadata.query}
             </div>
             <div>
-              <span className="font-medium">Total Articles:</span> {data.metadata.total_articles}
+              <span className="font-medium">Total Articles:</span>{" "}
+              {data.metadata.total_articles}
             </div>
             <div>
-              <span className="font-medium">Successful:</span> {data.metadata.successful}
+              <span className="font-medium">Successful:</span>{" "}
+              {data.metadata.successful}
             </div>
           </div>
         </div>
@@ -127,7 +159,9 @@ export default function ArticlesPage() {
         {data.articles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <FileText className="h-16 w-16 text-muted-foreground" />
-            <h2 className="mt-4 text-xl font-semibold text-foreground">No articles found</h2>
+            <h2 className="mt-4 text-xl font-semibold text-foreground">
+              No articles found
+            </h2>
             <p className="mt-2 text-muted-foreground">
               This data file does not contain any articles
             </p>
@@ -158,4 +192,3 @@ export default function ArticlesPage() {
     </div>
   );
 }
-
