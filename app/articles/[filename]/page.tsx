@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArticleCard } from "@/components/ArticleCard";
 import { ArticleSheet } from "@/components/ArticleSheet";
+import { MarkdownReportSheet } from "@/components/MarkdownReportSheet";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,6 +28,7 @@ export default function ArticlesPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [reportSheetOpen, setReportSheetOpen] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -71,6 +73,10 @@ export default function ArticlesPage() {
     setSelectedArticle(article);
     setSheetOpen(true);
   };
+
+  const hasValidMarkdownReport =
+    data?.metadata?.markdown_report &&
+    data.metadata.markdown_report.trim().length > 0;
 
   if (loading) {
     return (
@@ -136,7 +142,19 @@ export default function ArticlesPage() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setReportSheetOpen(true)}
+                disabled={!hasValidMarkdownReport}
+                className="gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                View Report
+              </Button>
+              <ThemeToggle />
+            </div>
           </div>
           <h1 className="text-3xl font-bold text-foreground">{data.name}</h1>
           <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -190,6 +208,13 @@ export default function ArticlesPage() {
         showMetadata={true}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
+      />
+
+      <MarkdownReportSheet
+        markdownReport={data.metadata.markdown_report}
+        open={reportSheetOpen}
+        onOpenChange={setReportSheetOpen}
+        title={`Analysis Report - ${data.name}`}
       />
     </div>
   );

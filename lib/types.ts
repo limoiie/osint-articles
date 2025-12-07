@@ -1,5 +1,6 @@
 export interface YamlMetadata {
   query: string;
+  markdown_report: string | null;
   processed_at: string;
   total_articles: number;
   successful: number;
