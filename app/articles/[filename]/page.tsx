@@ -79,8 +79,7 @@ export default function ArticlesPage() {
     data.metadata.markdown_report.trim().length > 0;
 
   const hasValidPdfReport =
-    data?.metadata?.pdf_report &&
-    data.metadata.pdf_report.trim().length > 0;
+    data?.metadata?.pdf_report && data.metadata.pdf_report.trim().length > 0;
 
   const handleViewReport = () => {
     if (hasValidPdfReport && data?.metadata?.pdf_report) {
@@ -158,6 +157,12 @@ export default function ArticlesPage() {
               </BreadcrumbList>
             </Breadcrumb>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold text-foreground">
+            {data.name}
+            <span className="ml-4">
               <Button
                 variant="outline"
                 size="sm"
@@ -168,10 +173,8 @@ export default function ArticlesPage() {
                 <FileText className="h-4 w-4" />
                 View Report
               </Button>
-              <ThemeToggle />
-            </div>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">{data.name}</h1>
+            </span>
+          </h1>
           <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
             <div>
               <span className="font-medium">Query:</span> {data.metadata.query}
