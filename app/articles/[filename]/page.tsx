@@ -186,6 +186,7 @@ export default function ArticlesPage() {
 
       <ArticleSheet
         article={selectedArticle}
+        showMetadata={true}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
       />

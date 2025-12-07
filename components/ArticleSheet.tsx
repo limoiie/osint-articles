@@ -13,17 +13,20 @@ import type { Article } from "@/lib/types";
 import { ExternalLink } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { format } from "date-fns";
 
 interface ArticleSheetProps {
   article: Article | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  showMetadata?: boolean; // Flag to control whether to show metadata or markdown
 }
 
 export function ArticleSheet({
   article,
   open,
   onOpenChange,
+  showMetadata = false,
 }: ArticleSheetProps) {
   if (!article) return null;
 
@@ -88,6 +91,112 @@ export function ArticleSheet({
                     above.
                   </p>
                 </div>
+              </div>
+            ) : showMetadata ? (
+              <div className="space-y-6 py-6">
+                <div>
+                  <h4 className="mb-3 text-lg font-semibold text-foreground">
+                    Summary
+                  </h4>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {article.article.summary}
+                  </p>
+                </div>
+
+                <div className="grid gap-3 text-sm">
+                  <div className="flex justify-between border-b border-border pb-2">
+                    <span className="font-medium text-foreground">Source:</span>
+                    <span className="text-muted-foreground">
+                      {article.article.source}
+                    </span>
+                  </div>
+                  {article.article.published_date && (
+                    <div className="flex justify-between border-b border-border pb-2">
+                      <span className="font-medium text-foreground">
+                        Published:
+                      </span>
+                      <span className="text-muted-foreground">
+                        {format(
+                          new Date(article.article.published_date),
+                          "PPP"
+                        )}
+                      </span>
+                    </div>
+                  )}
+                  {article.article.updated_date && (
+                    <div className="flex justify-between border-b border-border pb-2">
+                      <span className="font-medium text-foreground">
+                        Updated:
+                      </span>
+                      <span className="text-muted-foreground">
+                        {format(new Date(article.article.updated_date), "PPP")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {article.article.authors &&
+                  article.article.authors.length > 0 && (
+                    <div>
+                      <h5 className="mb-2 text-sm font-semibold text-foreground">
+                        Authors
+                      </h5>
+                      <p className="text-sm text-muted-foreground">
+                        {article.article.authors.join(", ")}
+                      </p>
+                    </div>
+                  )}
+
+                {article.article.categories &&
+                  article.article.categories.length > 0 && (
+                    <div>
+                      <h5 className="mb-2 text-sm font-semibold text-foreground">
+                        Categories
+                      </h5>
+                      <div className="flex flex-wrap gap-2">
+                        {article.article.categories.map((category, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="outline"
+                            className="text-xs"
+                          >
+                            {category}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                {article.article.tags && article.article.tags.length > 0 && (
+                  <div>
+                    <h5 className="mb-2 text-sm font-semibold text-foreground">
+                      Tags
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {article.article.tags.map((tag, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {article.article.key_points &&
+                  article.article.key_points.length > 0 && (
+                    <div>
+                      <h5 className="mb-3 text-sm font-semibold text-foreground">
+                        Key Points
+                      </h5>
+                      <ul className="list-inside list-disc space-y-2 text-sm text-muted-foreground">
+                        {article.article.key_points.map((point, idx) => (
+                          <li key={idx} className="leading-relaxed">
+                            {point}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
               </div>
             ) : (
               <ReactMarkdown
